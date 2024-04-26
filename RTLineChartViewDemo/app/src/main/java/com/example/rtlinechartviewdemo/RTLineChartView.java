@@ -295,7 +295,7 @@ public class RTLineChartView extends View {
         }
     }
 
-    // 绑定实时变量，采样率为1Hz(每1s采集一次)
+    // 绑定实时变量
     public void bindRTVariable(RTVariable model) {
         boolean isExist = false;
         for (int i = 0; i < lineDataList.size(); i++) {
