@@ -221,7 +221,7 @@ public class RTLineChartView extends View {
         }
 
         firstGridTimestamp = System.currentTimeMillis() - getAxisTimeInterval(xAxisTimeLength, xAxisTimeUnit);
-        firstGridLeftMargin = (getWidth() - margin_left - margin_right) / xAxisGridCount;
+        firstGridLeftMargin = (getWidth() - margin_left - margin_right) / (float) xAxisGridCount;
 
         timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -388,7 +388,7 @@ public class RTLineChartView extends View {
                     String format = "%."+yAxisDecimalPlaceCount+"f";
                     valueStr = String.format(format, value);
                 } else {
-                    valueStr = String.format("%d", (int)value);
+                    valueStr = String.format(Locale.CHINA, "%d", (int)value);
                 }
                 Paint.FontMetrics fontMetrics = paint_y_axis_text.getFontMetrics();
                 float offset_y = fontMetrics.ascent / 2;
@@ -415,7 +415,7 @@ public class RTLineChartView extends View {
                 String format = "%."+yAxisDecimalPlaceCount+"f";
                 valueStr = String.format(format, yAxisMinValue);
             } else {
-                valueStr = String.format("%d", (int)yAxisMinValue);
+                valueStr = String.format(Locale.CHINA, "%d", (int)yAxisMinValue);
             }
             canvas.drawText(valueStr, margin_left-8, getHeight()-margin_bottom, paint_y_axis_text);
         }
