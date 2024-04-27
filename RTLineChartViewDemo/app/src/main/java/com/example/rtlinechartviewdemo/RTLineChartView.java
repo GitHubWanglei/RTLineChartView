@@ -192,22 +192,32 @@ public class RTLineChartView extends View {
 
     }
 
-    // 动态设置y轴最大、最小值，防止曲线越界
+    /**
+     * 动态设置y轴最大、最小值，防止曲线越界
+     * @param dynamicValue 回调参数，重写方法时，需动态返回最大、最小值
+     */
     public void setYAxisDynamicValue(RTLineChartYAxisDynamicValue dynamicValue) {
         yAxisDynamicValue = dynamicValue;
     }
 
-    public void refreshParameter() {
+    /**
+     * 刷新样式，修改样式后，调用此方法使样式生效
+     */
+    public void refreshStyle() {
         configData();
     }
 
+    /**
+     * 开始监听
+     * @param sampleRate 采样率
+     */
     public void startListening(float sampleRate) {
 
         if (sampleRate <= 0) {
             sampleRate = 1;
         }
 
-        refreshParameter();
+        refreshStyle();
 
         if (timer != null) {
             timer.cancel();
@@ -282,6 +292,9 @@ public class RTLineChartView extends View {
         }, 2, (long) (1.f / sampleRate * 1000));
     }
 
+    /**
+     * 停止监听，页面即将销毁时需主动调用
+     */
     public void stopListening() {
         if (timer != null) {
             timer.cancel();
@@ -289,34 +302,43 @@ public class RTLineChartView extends View {
         }
     }
 
-    // 绑定实时变量
-    public void bindRTVariable(RTVariable model) {
+    /**
+     * 绑定实时变量
+     * @param variable 实时变量
+     */
+    public void bindRTVariable(RTVariable variable) {
         boolean isExist = false;
         for (int i = 0; i < lineDataList.size(); i++) {
-            if (lineDataList.get(i).rtVariable.identifier.equals(model.identifier)) {
+            if (lineDataList.get(i).rtVariable.identifier.equals(variable.identifier)) {
                 isExist = true;
             }
         }
         if (isExist) return;
         RTLineData lineData = new RTLineData();
-        lineData.rtVariable = model;
+        lineData.rtVariable = variable;
         lineDataList.add(lineData);
     }
 
-    // 解绑实时变量，历史数据不会立即清除，随着时间流逝，历史数据会被逐渐删除
-    public void unbindRTVariable(RTVariable model) {
+    /**
+     * 解绑实时变量，历史数据不会立即清除，随着时间流逝，历史数据会被逐渐删除
+      * @param variable 要解绑的实时变量
+     */
+    public void unbindRTVariable(RTVariable variable) {
         for (int i = 0; i < lineDataList.size(); i++) {
-            if (lineDataList.get(i).rtVariable.identifier.equals(model.identifier)) {
+            if (lineDataList.get(i).rtVariable.identifier.equals(variable.identifier)) {
                 lineDataList.get(i).isBinding = false;
                 break;
             }
         }
     }
 
-    // 解绑并立即清除历史数据
-    public void unbindAndClearRTVariable(RTVariable model) {
+    /**
+     * 解绑并立即清除历史数据
+     * @param variable 实时变量
+     */
+    public void unbindAndClearRTVariable(RTVariable variable) {
         for (int i = 0; i < lineDataList.size(); i++) {
-            if (lineDataList.get(i).rtVariable.identifier.equals(model.identifier)) {
+            if (lineDataList.get(i).rtVariable.identifier.equals(variable.identifier)) {
                 lineDataList.remove(i);
                 break;
             }

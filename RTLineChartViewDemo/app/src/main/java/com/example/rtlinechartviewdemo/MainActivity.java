@@ -48,27 +48,26 @@ public class MainActivity extends BaseActivity {
 //        rtLineChartView.gridBackgroundColor = Color.BLUE;
 //        rtLineChartView.setBackgroundColor(Color.RED);
 
-        rtLineChartView.startListening(10);
+        rtLineChartView.startListening(60);
 
         RTLineChartView.RTVariable var_1 = new RTLineChartView.RTVariable();
         var_1.identifier = "line_1";
         var_1.value = 246;
-        var_1.paint.setStrokeWidth(5);
+        var_1.paint.setStrokeWidth(3);
         var_1.paint.setColor(Color.RED);
-        var_1.paint.setPathEffect(new CornerPathEffect(15.f));
         rtLineChartView.bindRTVariable(var_1);
 
         RTLineChartView.RTVariable var_2 = new RTLineChartView.RTVariable();
         var_2.identifier = "line_2";
         var_2.value = 200;
-        var_2.paint.setStrokeWidth(5);
+        var_2.paint.setStrokeWidth(3);
         var_2.paint.setColor(Color.GREEN);
         rtLineChartView.bindRTVariable(var_2);
 
         RTLineChartView.RTVariable var_3 = new RTLineChartView.RTVariable();
         var_3.identifier = "line_3";
         var_3.value = 150;
-        var_3.paint.setStrokeWidth(5);
+        var_3.paint.setStrokeWidth(3);
         var_3.paint.setColor(Color.YELLOW);
         rtLineChartView.bindRTVariable(var_3);
 
