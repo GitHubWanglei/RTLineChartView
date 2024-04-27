@@ -1,7 +1,7 @@
 # RTLineChartView
 A real-time curve component that only needs to bind variables for real-time display.  
 
-![ezgif-6-7a443b1556](https://github.com/GitHubWanglei/RTLineChartView/assets/16434720/6c72afe1-4cd0-448b-9b13-ed86dc8c16c0)
+![ezgif-7-5b58b1fcd2](https://github.com/GitHubWanglei/RTLineChartView/assets/16434720/655b812c-966a-4cd9-9239-6c306a90cde7)
 
 ### 使用：   
 1.创建实时变量：
