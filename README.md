@@ -19,7 +19,7 @@ A real-time curve component that only needs to bind variables for real-time disp
    ```
 3.开始监听：
    ```java
-   // 采样率参数`sampleRate`最好不要大于屏幕刷新率，以避免不必要的性能浪费.
+   // 采样率sampleRate最好不要大于屏幕刷新率，以避免不必要的性能浪费.
    rtLineChartView.startListening(60);
    ```
 ### 使用注意点：
