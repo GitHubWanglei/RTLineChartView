@@ -52,37 +52,37 @@ public class RTLineChartView extends View {
 
     // 网格区域背景
     public int gridBackgroundColor = Color.BLACK;
-    private Paint gridBackgroundPaint = new Paint();
-    private Path gridBackgroundPath = new Path();
+    private final Paint gridBackgroundPaint = new Paint();
+    private final Path gridBackgroundPath = new Path();
     // x轴、y轴样式
     public int xAxisWidth = 3;
     public int xAxisColor = Color.WHITE;
-    private Paint paint_x_axis = new Paint();
+    private final Paint paint_x_axis = new Paint();
     public int yAxisWidth = 3;
     public int yAxisColor = Color.WHITE;
-    private Paint paint_y_axis = new Paint();
+    private final Paint paint_y_axis = new Paint();
     // x轴分割线
     public int xAxisGridCount = 4;
     public int xAxisGridWidth = 1;
     public int xAxisGridColor = 0xFF999999;
-    private Paint paint_x_axis_grid = new Paint();
+    private final Paint paint_x_axis_grid = new Paint();
     public int xAxisGridCount_2 = 2;
     public int xAxisGridWidth_2 = 1;
     public int xAxisGridColor_2 = 0xFF999999;
-    private Paint paint_x_axis_grid_2 = new Paint();
+    private final Paint paint_x_axis_grid_2 = new Paint();
     // y轴分割线
     public int yAxisGridCount = 4;
     public int yAxisGridWidth = 1;
     public int yAxisGridColor = 0xFF999999;
-    private Paint paint_y_axis_grid = new Paint();
+    private final Paint paint_y_axis_grid = new Paint();
     public int yAxisGridCount_2 = 2;
     public int yAxisGridWidth_2 = 1;
     public int yAxisGridColor_2 = 0xFF999999;
-    private Paint paint_y_axis_grid_2 = new Paint();
+    private final Paint paint_y_axis_grid_2 = new Paint();
     // x轴标注
     public int xAxisTextSize = 16;
     public int xAxisTextColor = Color.WHITE;
-    private Paint paint_x_axis_text = new Paint();
+    private final Paint paint_x_axis_text = new Paint();
     public int xAxisTimeUnit = TIME_UNIT_SECOND;
     public static int TIME_UNIT_SECOND = 1;
     public static int TIME_UNIT_MINUTE = 2;
@@ -99,7 +99,7 @@ public class RTLineChartView extends View {
     // y轴标注
     public int yAxisTextSize = 16;
     public int yAxisTextColor = Color.WHITE;
-    private Paint paint_y_axis_text = new Paint();
+    private final Paint paint_y_axis_text = new Paint();
     public int yAxisDecimalPlaceCount = 2;
     private float yAxisMinValue = 0.f;
     private float yAxisMaxValue = 100.f;
@@ -111,7 +111,7 @@ public class RTLineChartView extends View {
     public int margin_top = 20;
     public int margin_right = 20;
     // 虚线虚实比例
-    public float dashIntervals[] = new float[]{3, 8};
+    public float[] dashIntervals = new float[]{3, 8};
     // x轴原点处的时间戳(最小时间)
     private long minTimestamp = 0L;
     // 第一个分割线的时间戳
@@ -121,9 +121,9 @@ public class RTLineChartView extends View {
     // timer
     private Timer timer;
     // 所有实时变量以及历史数据
-    private List<RTLineData> lineDataList = new ArrayList<>();
+    private final List<RTLineData> lineDataList = new ArrayList<>();
     // 折线 path
-    private Path linePath = new Path();
+    private final Path linePath = new Path();
 
     public RTLineChartView(Context context) {
         this(context, null);
@@ -144,19 +144,16 @@ public class RTLineChartView extends View {
         gridBackgroundPaint.setColor(gridBackgroundColor);
 
         paint_x_axis.setStyle(Paint.Style.STROKE);
-        paint_x_axis.setAntiAlias(true);
         paint_x_axis.setColor(xAxisColor);
         paint_x_axis.setStrokeWidth(xAxisWidth);
         paint_x_axis.setStrokeCap(Paint.Cap.ROUND);
 
         paint_y_axis.setStyle(Paint.Style.STROKE);
-        paint_y_axis.setAntiAlias(true);
         paint_y_axis.setColor(yAxisColor);
         paint_y_axis.setStrokeWidth(yAxisWidth);
         paint_y_axis.setStrokeCap(Paint.Cap.ROUND);
 
         paint_x_axis_grid.setStyle(Paint.Style.STROKE);
-        paint_x_axis_grid.setAntiAlias(true);
         paint_x_axis_grid.setColor(xAxisGridColor);
         paint_x_axis_grid.setStrokeWidth(xAxisGridWidth);
         paint_x_axis_grid.setStrokeCap(Paint.Cap.ROUND);
@@ -164,21 +161,18 @@ public class RTLineChartView extends View {
         paint_x_axis_grid.setPathEffect(effects);
 
         paint_x_axis_grid_2.setStyle(Paint.Style.STROKE);
-        paint_x_axis_grid_2.setAntiAlias(true);
         paint_x_axis_grid_2.setColor(xAxisGridColor_2);
         paint_x_axis_grid_2.setStrokeWidth(xAxisGridWidth_2);
         paint_x_axis_grid_2.setStrokeCap(Paint.Cap.ROUND);
         paint_x_axis_grid_2.setPathEffect(effects);
 
         paint_y_axis_grid.setStyle(Paint.Style.STROKE);
-        paint_y_axis_grid.setAntiAlias(true);
         paint_y_axis_grid.setColor(yAxisGridColor);
         paint_y_axis_grid.setStrokeWidth(yAxisGridWidth);
         paint_y_axis_grid.setStrokeCap(Paint.Cap.ROUND);
         paint_y_axis_grid.setPathEffect(effects);
 
         paint_y_axis_grid_2.setStyle(Paint.Style.STROKE);
-        paint_y_axis_grid_2.setAntiAlias(true);
         paint_y_axis_grid_2.setColor(yAxisGridColor_2);
         paint_y_axis_grid_2.setStrokeWidth(yAxisGridWidth_2);
         paint_y_axis_grid_2.setStrokeCap(Paint.Cap.ROUND);
