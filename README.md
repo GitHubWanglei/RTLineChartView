@@ -13,3 +13,7 @@ A real-time curve component that only needs to bind variables for real-time disp
    var_1.paint.setColor(Color.RED);
    rtLineChartView.bindRTVariable(var_1);
    ```
+2.绑定实时变量:
+```java
+rtLineChartView.bindRTVariable(var_1);
+```
