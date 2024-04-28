@@ -22,6 +22,26 @@ A real-time curve component that only needs to bind variables for real-time disp
    // 采样率sampleRate最好不要大于屏幕刷新率，以避免不必要的性能浪费.
    rtLineChartView.startListening(60);
    ```
+4.可动态设置y轴范围，防止折线越界，显示不完整.
+   ```java
+   rtLineChartView.setYAxisDynamicValue(new RTLineChartView.RTLineChartYAxisDynamicValue() {
+      @Override
+      public float minValue(float minValueInLine) {
+         if (minValueInLine < 0) {
+            return minValueInLine - 20;
+         }
+         return 0;
+      }
+
+      @Override
+      public float maxValue(float maxValueInLine) {
+         if (maxValueInLine > 500) {
+            return maxValueInLine + 50;
+         }
+         return 500;
+      }
+   });
+   ```
 ### 使用注意点：
 1.每个实时变量的`identifier`需唯一，否则重复的`identifier`变量将无法绑定.   
 2.关于采样率：    
