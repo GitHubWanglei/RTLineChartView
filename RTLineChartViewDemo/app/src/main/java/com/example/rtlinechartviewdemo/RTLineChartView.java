@@ -284,6 +284,14 @@ public class RTLineChartView extends View {
                             yAxisMaxValue = 100.f;
                         }
 
+                        // 网格背景path
+                        gridBackgroundPath.reset();
+                        gridBackgroundPath.moveTo(margin_left, getHeight()-margin_bottom);
+                        gridBackgroundPath.lineTo(margin_left, margin_top);
+                        gridBackgroundPath.lineTo(getWidth()-margin_right, margin_top);
+                        gridBackgroundPath.lineTo(getWidth()-margin_right, getHeight()-margin_bottom);
+                        gridBackgroundPath.close();
+
                         invalidate();
 
                     }
@@ -351,12 +359,6 @@ public class RTLineChartView extends View {
         float xAxisLength = getWidth() - margin_left - margin_right;
         float yAxisLength = getHeight() - margin_top - margin_bottom;
         // 网格背景
-        gridBackgroundPath.reset();
-        gridBackgroundPath.moveTo(margin_left, margin_top+yAxisLength);
-        gridBackgroundPath.lineTo(margin_left, margin_top);
-        gridBackgroundPath.lineTo(margin_left+xAxisLength, margin_top);
-        gridBackgroundPath.lineTo(margin_left+xAxisLength, margin_top+yAxisLength);
-        gridBackgroundPath.close();
         canvas.drawPath(gridBackgroundPath, gridBackgroundPaint);
         // x轴
         canvas.drawLine(margin_left, yAxisLength+margin_top, margin_left+xAxisLength, yAxisLength+margin_top, paint_x_axis);
