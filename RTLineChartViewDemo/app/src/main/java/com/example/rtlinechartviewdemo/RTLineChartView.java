@@ -24,9 +24,11 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-// 实时曲线
+/**
+ * 实时曲线
+ */
 public class RTLineChartView extends View {
-
+    // 实时变量
     public static class RTVariable {
         public String identifier = "";
         public float value = 0.f;
@@ -40,12 +42,12 @@ public class RTLineChartView extends View {
             paint.setStrokeJoin(Paint.Join.ROUND);
         }
     }
-
+    // 折线中的点
     private static class RTPointData {
         public long timestamp = 0L;
         public float value = 0.f;
     }
-
+    // 折线
     private static class RTLineData {
         public boolean isBinding = true;
         public RTVariable rtVariable;
@@ -146,8 +148,6 @@ public class RTLineChartView extends View {
 
     private void configData() {
 
-        overlayPaint.setStyle(Paint.Style.FILL);
-
         gridBackgroundPaint.setStyle(Paint.Style.FILL);
         gridBackgroundPaint.setColor(gridBackgroundColor);
 
@@ -197,6 +197,8 @@ public class RTLineChartView extends View {
         paint_y_axis_text.setFakeBoldText(true);
         paint_y_axis_text.setColor(yAxisTextColor);
         paint_y_axis_text.setTextAlign(Paint.Align.RIGHT);
+
+        overlayPaint.setStyle(Paint.Style.FILL);
 
     }
 
@@ -272,7 +274,7 @@ public class RTLineChartView extends View {
                                     lineData.dataList.remove(j);
                                 }
                             }
-                            // 已解除绑定的变量历史数据，随着时间的流逝，历史数据已被全部删除完，则清除此实时变量
+                            // 已解除绑定的变量历史数据，随着时间的流逝，历史数据已被全部删除完，则删除此实时变量
                             if (!lineData.isBinding && lineData.dataList.size() == 0) {
                                 lineDataList.remove(i);
                             }
@@ -337,7 +339,7 @@ public class RTLineChartView extends View {
     }
 
     /**
-     * 停止监听，页面即将销毁时需主动调用
+     * 停止监听，页面即将销毁时需主动调用，防止内存泄漏
      */
     public void stopListening() {
         if (timer != null) {
@@ -364,8 +366,8 @@ public class RTLineChartView extends View {
     }
 
     /**
-     * 解绑实时变量，历史数据不会立即清除，随着时间流逝，历史数据会被逐渐删除
-      * @param variable 要解绑的实时变量
+     * 解绑实时变量，此变量的历史数据不会立即删除(折线断开，但不会立即消失)，随着时间流逝，历史数据会被逐渐删除
+      * @param variable 实时变量
      */
     public void unbindRTVariable(RTVariable variable) {
         for (int i = 0; i < lineDataList.size(); i++) {
@@ -377,7 +379,7 @@ public class RTLineChartView extends View {
     }
 
     /**
-     * 解绑并立即清除历史数据
+     * 解绑并立即删除历史数据，此变量的折线立即消失
      * @param variable 实时变量
      */
     public void unbindAndClearRTVariable(RTVariable variable) {
