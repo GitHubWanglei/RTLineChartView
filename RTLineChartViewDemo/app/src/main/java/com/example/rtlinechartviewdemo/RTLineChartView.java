@@ -224,6 +224,11 @@ public class RTLineChartView extends View {
             timer = null;
         }
 
+        if (xAxisGridCount <= 0) xAxisGridCount = 1;
+        if (xAxisGridCount_2 <= 0) xAxisGridCount_2 = 1;
+        if (yAxisGridCount <= 0) yAxisGridCount = 1;
+        if (yAxisGridCount_2 <= 0) yAxisGridCount_2 = 1;
+
         firstGridTimestamp = System.currentTimeMillis() - getAxisTimeInterval(xAxisTimeLength, xAxisTimeUnit);
         firstGridLeftMargin = (getWidth() - margin_left - margin_right) / (float) xAxisGridCount;
 
@@ -282,6 +287,9 @@ public class RTLineChartView extends View {
                         } else {
                             yAxisMinValue = 0.f;
                             yAxisMaxValue = 100.f;
+                        }
+                        if (yAxisMaxValue <= yAxisMinValue) {
+                            return;
                         }
 
                         // 网格背景path
