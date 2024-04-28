@@ -8,7 +8,7 @@ A real-time curve component that only needs to bind variables for real-time disp
    ```java
    RTLineChartView.RTVariable var_1 = new RTLineChartView.RTVariable();
    var_1.identifier = "line_1";
-   var_1.value = 246;
+   var_1.value = 246; // 当value改变时，折线图会实时刷新
    var_1.paint.setStrokeWidth(3);
    var_1.paint.setColor(Color.RED);
    rtLineChartView.bindRTVariable(var_1);
