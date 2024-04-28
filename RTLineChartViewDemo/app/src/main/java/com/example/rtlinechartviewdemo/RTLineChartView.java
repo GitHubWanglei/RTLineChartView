@@ -7,6 +7,8 @@ import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathEffect;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
@@ -124,6 +126,10 @@ public class RTLineChartView extends View {
     private final List<RTLineData> lineDataList = new ArrayList<>();
     // 折线 path
     private final Path linePath = new Path();
+    // 遮挡，折线超出y轴范围时，进行遮挡
+    private final Path topOverlayPath = new Path();
+    private final Path bottomOverlayPath = new Path();
+    private final Paint overlayPaint = new Paint();
 
     public RTLineChartView(Context context) {
         this(context, null);
@@ -139,6 +145,8 @@ public class RTLineChartView extends View {
     }
 
     private void configData() {
+
+        overlayPaint.setStyle(Paint.Style.FILL);
 
         gridBackgroundPaint.setStyle(Paint.Style.FILL);
         gridBackgroundPaint.setColor(gridBackgroundColor);
@@ -300,6 +308,26 @@ public class RTLineChartView extends View {
                         gridBackgroundPath.lineTo(getWidth()-margin_right, getHeight()-margin_bottom);
                         gridBackgroundPath.close();
 
+                        // 顶部遮挡
+                        topOverlayPath.reset();
+                        topOverlayPath.moveTo(margin_left, margin_top-yAxisGridWidth);
+                        topOverlayPath.lineTo(getWidth(), margin_top-yAxisGridWidth);
+                        topOverlayPath.lineTo(getWidth(), 0);
+                        topOverlayPath.lineTo(margin_left, 0);
+                        // 底部遮挡
+                        bottomOverlayPath.reset();
+                        bottomOverlayPath.moveTo(margin_left, getHeight()-margin_bottom);
+                        bottomOverlayPath.lineTo(getWidth(), getHeight()-margin_bottom);
+                        bottomOverlayPath.lineTo(getWidth(), getHeight());
+                        bottomOverlayPath.lineTo(margin_left, getHeight());
+                        // overlay画笔
+                        Drawable background = getBackground();
+                        if (background instanceof ColorDrawable) {
+                            overlayPaint.setColor(((ColorDrawable)background).getColor());
+                        } else {
+                            overlayPaint.setColor(Color.BLACK);
+                        }
+
                         invalidate();
 
                     }
@@ -379,12 +407,6 @@ public class RTLineChartView extends View {
                 break;
             }
             canvas.drawLine(start_x, margin_top+yAxisLength-xAxisWidth, start_x, margin_top, paint_x_axis_grid);
-            // x轴时间文字
-            if (showXAxisText) {
-                long timeStamp = firstGridTimestamp + getAxisTimeInterval(xAxisTimeLength, xAxisTimeUnit) / xAxisGridCount * i;
-                String timeStr = formatTimestamp(timeStamp, getFormat(xAxisTimeFormat));
-                canvas.drawText(timeStr, start_x, margin_top+yAxisLength+20, paint_x_axis_text);
-            }
             // 次分割线(网格之间再次分割)
             for (int j = 0; j < xAxisGridCount_2; j++) {
                 if (j + 1 == xAxisGridCount_2) break; // 最后一条分割线不用画
@@ -446,6 +468,8 @@ public class RTLineChartView extends View {
             canvas.drawText(valueStr, margin_left-8, getHeight()-margin_bottom, paint_y_axis_text);
         }
         // 折线
+        boolean isOutTopRange = false;
+        boolean isOutBottomRange = false;
         for (int i = 0; i < lineDataList.size(); i++) {
             RTLineData lineData = lineDataList.get(i);
             if (lineData.dataList.size() == 0) continue;
@@ -458,8 +482,35 @@ public class RTLineChartView extends View {
                 float end_x = margin_left + yAxisWidth + (pointData.timestamp - minTimestamp) / (float)getAxisTimeInterval(xAxisTimeLength, xAxisTimeUnit) * (xAxisLength - yAxisWidth);
                 float end_y = yAxisLength - (pointData.value - yAxisMinValue) / (yAxisMaxValue - yAxisMinValue) * yAxisLength + margin_top;
                 linePath.lineTo(end_x, end_y);
+                if (!isOutTopRange && end_y < margin_top) {
+                    isOutTopRange = true;
+                }
+                if (!isOutBottomRange && end_y > (getHeight()-margin_bottom)) {
+                    isOutBottomRange = true;
+                }
             }
             canvas.drawPath(linePath, lineData.rtVariable.paint);
+        }
+
+        // 超出y轴范围，则进行遮挡
+        if (isOutTopRange) {
+            canvas.drawPath(topOverlayPath, overlayPaint);
+        }
+        if (isOutBottomRange) {
+            canvas.drawPath(bottomOverlayPath, overlayPaint);
+        }
+
+        // x轴时间文字
+        if (showXAxisText) {
+            for (int i = 0; i < xAxisGridCount; i++) {
+                float start_x = margin_left + firstGridLeftMargin + (xAxisLength / xAxisGridCount) * i;
+                if (start_x > margin_left + xAxisLength) {
+                    break;
+                }
+                long timeStamp = firstGridTimestamp + getAxisTimeInterval(xAxisTimeLength, xAxisTimeUnit) / xAxisGridCount * i;
+                String timeStr = formatTimestamp(timeStamp, getFormat(xAxisTimeFormat));
+                canvas.drawText(timeStr, start_x, margin_top + yAxisLength + 20, paint_x_axis_text);
+            }
         }
 
     }
