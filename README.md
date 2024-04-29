@@ -1,5 +1,6 @@
-[![](https://img.shields.io/badge/license-MIT-gray.svg)](https://champyin.com)
+[![](https://img.shields.io/badge/license-MIT-green.svg)](https://champyin.com)
 [![](https://img.shields.io/badge/platform-Android-green.svg)](https://champyin.com)
+[![](https://img.shields.io/badge/language-JAVA-yellow.svg)](https://champyin.com)
 
 # RTLineChartView
 A real-time curve component that only needs to bind variables for real-time display.  
