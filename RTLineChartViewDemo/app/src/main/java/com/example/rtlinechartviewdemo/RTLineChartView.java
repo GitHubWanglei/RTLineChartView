@@ -441,7 +441,7 @@ public class RTLineChartView extends View {
                     valueStr = String.format(Locale.CHINA, "%d", (int)value);
                 }
                 Paint.FontMetrics fontMetrics = paint_y_axis_text.getFontMetrics();
-                float offset_y = fontMetrics.ascent / 2;
+                float offset_y = fontMetrics.ascent / 2.8f;
                 if (i == yAxisGridCount - 1) {
                     offset_y = fontMetrics.ascent+5;
                 }
