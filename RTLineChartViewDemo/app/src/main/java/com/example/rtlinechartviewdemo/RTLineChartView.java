@@ -65,6 +65,9 @@ public class RTLineChartView extends View {
     public int yAxisWidth = 3;
     public int yAxisColor = Color.WHITE;
     private final Paint paint_y_axis = new Paint();
+    public int yAxisRightWidth = 3;
+    public int yAxisRightColor = Color.WHITE;
+    private final Paint paint_y_right_axis = new Paint();
     // x轴分割线
     public int xAxisGridCount = 4;
     public int xAxisGridWidth = 1;
@@ -109,6 +112,19 @@ public class RTLineChartView extends View {
     private float yAxisMaxValue = 100.f;
     public RTLineChartYAxisDynamicValue yAxisDynamicValue;
     public boolean showYAxisText = true;
+    // 右侧y轴标注
+    public int yAxisRightTextSize = 16;
+    public int yAxisRightTextColor = Color.WHITE;
+    private final Paint paint_y_right_axis_text = new Paint();
+    public int yAxisRightDecimalPlaceCount = 2;
+    // 是否显示右侧y轴
+    public boolean showRightYAxis = false;
+    /**
+     * y轴左侧和右侧值的比例关系。
+     * eg: (l1-l2) ~ (r1, r2)，则转换比例: scale = (r2-r1) / (l2-l1)。
+     * 给定左侧值left_value，则右侧值：right_value = left_value * scale;
+     */
+    public float rightYAxisValueConvertScale = 1.f;
     // 间距
     public int margin_left = 80;
     public int margin_bottom = 50;
@@ -132,6 +148,8 @@ public class RTLineChartView extends View {
     private final Path topOverlayPath = new Path();
     private final Path bottomOverlayPath = new Path();
     private final Paint overlayPaint = new Paint();
+    // RTLineChartYAXisValueFormat
+    private RTLineChartYAXisValueFormat yAXisValueFormat;
 
     public RTLineChartView(Context context) {
         this(context, null);
@@ -160,6 +178,11 @@ public class RTLineChartView extends View {
         paint_y_axis.setColor(yAxisColor);
         paint_y_axis.setStrokeWidth(yAxisWidth);
         paint_y_axis.setStrokeCap(Paint.Cap.ROUND);
+
+        paint_y_right_axis.setStyle(Paint.Style.STROKE);
+        paint_y_right_axis.setColor(yAxisRightColor);
+        paint_y_right_axis.setStrokeWidth(yAxisRightWidth);
+        paint_y_right_axis.setStrokeCap(Paint.Cap.ROUND);
 
         paint_x_axis_grid.setStyle(Paint.Style.STROKE);
         paint_x_axis_grid.setColor(xAxisGridColor);
@@ -198,6 +221,12 @@ public class RTLineChartView extends View {
         paint_y_axis_text.setColor(yAxisTextColor);
         paint_y_axis_text.setTextAlign(Paint.Align.RIGHT);
 
+        paint_y_right_axis_text.setAntiAlias(true);
+        paint_y_right_axis_text.setTextSize(yAxisRightTextSize);
+        paint_y_right_axis_text.setFakeBoldText(true);
+        paint_y_right_axis_text.setColor(yAxisRightTextColor);
+        paint_y_right_axis_text.setTextAlign(Paint.Align.LEFT);
+
         overlayPaint.setStyle(Paint.Style.FILL);
 
     }
@@ -208,6 +237,14 @@ public class RTLineChartView extends View {
      */
     public void setYAxisDynamicValue(RTLineChartYAxisDynamicValue dynamicValue) {
         yAxisDynamicValue = dynamicValue;
+    }
+
+    /**
+     * 自定义y轴文字的显示格式，
+     * @param format
+     */
+    public void setYAxisValueFormat(RTLineChartYAXisValueFormat format) {
+        yAXisValueFormat = format;
     }
 
     /**
@@ -313,14 +350,14 @@ public class RTLineChartView extends View {
                         // 顶部遮挡
                         topOverlayPath.reset();
                         topOverlayPath.moveTo(margin_left, margin_top-yAxisGridWidth);
-                        topOverlayPath.lineTo(getWidth(), margin_top-yAxisGridWidth);
-                        topOverlayPath.lineTo(getWidth(), 0);
+                        topOverlayPath.lineTo(getWidth()-margin_right+2, margin_top-yAxisGridWidth);
+                        topOverlayPath.lineTo(getWidth()-margin_right+2, 0);
                         topOverlayPath.lineTo(margin_left, 0);
                         // 底部遮挡
                         bottomOverlayPath.reset();
-                        bottomOverlayPath.moveTo(margin_left, getHeight()-margin_bottom);
-                        bottomOverlayPath.lineTo(getWidth(), getHeight()-margin_bottom);
-                        bottomOverlayPath.lineTo(getWidth(), getHeight());
+                        bottomOverlayPath.moveTo(margin_left, getHeight()-margin_bottom+xAxisWidth/2.f);
+                        bottomOverlayPath.lineTo(getWidth()-margin_right+2, getHeight()-margin_bottom+xAxisWidth/2.f);
+                        bottomOverlayPath.lineTo(getWidth()-margin_right+2, getHeight());
                         bottomOverlayPath.lineTo(margin_left, getHeight());
                         // overlay画笔
                         Drawable background = getBackground();
@@ -402,6 +439,10 @@ public class RTLineChartView extends View {
         canvas.drawLine(margin_left, yAxisLength+margin_top, margin_left+xAxisLength, yAxisLength+margin_top, paint_x_axis);
         // y轴
         canvas.drawLine(margin_left, yAxisLength+margin_top, margin_left, margin_top, paint_y_axis);
+        // 右侧y轴
+        if (showRightYAxis) {
+            canvas.drawLine(margin_left+yAxisWidth/2.f+xAxisLength, yAxisLength+margin_top, margin_left+yAxisWidth/2.f+xAxisLength, margin_top, paint_y_right_axis);
+        }
         // x轴网格线
         for (int i = 0; i < xAxisGridCount; i++) {
             float start_x = margin_left + firstGridLeftMargin + (xAxisLength / xAxisGridCount) * i;
@@ -434,11 +475,15 @@ public class RTLineChartView extends View {
                 float valueInterval = (yAxisMaxValue - yAxisMinValue) / yAxisGridCount;
                 float value = yAxisMinValue + valueInterval * (i + 1);
                 String valueStr = "";
-                if (yAxisDecimalPlaceCount > 0) {
-                    String format = "%."+yAxisDecimalPlaceCount+"f";
-                    valueStr = String.format(format, value);
+                if (yAXisValueFormat != null && yAXisValueFormat.leftValueFormat(value) != null) {
+                    valueStr = yAXisValueFormat.leftValueFormat(value);
                 } else {
-                    valueStr = String.format(Locale.CHINA, "%d", (int)value);
+                    if (yAxisDecimalPlaceCount > 0) {
+                        String format = "%."+yAxisDecimalPlaceCount+"f";
+                        valueStr = String.format(format, value);
+                    } else {
+                        valueStr = String.format(Locale.CHINA, "%d", (int)value);
+                    }
                 }
                 Paint.FontMetrics fontMetrics = paint_y_axis_text.getFontMetrics();
                 float offset_y = fontMetrics.ascent / 2.8f;
@@ -446,6 +491,28 @@ public class RTLineChartView extends View {
                     offset_y = fontMetrics.ascent+5;
                 }
                 canvas.drawText(valueStr, margin_left-8, start_y-offset_y, paint_y_axis_text);
+            }
+            // 右侧y轴
+            if (showRightYAxis) {
+                float valueInterval = (yAxisMaxValue - yAxisMinValue) / yAxisGridCount;
+                float value = (yAxisMinValue + valueInterval * (i + 1)) * rightYAxisValueConvertScale;
+                String valueStr = "";
+                if (yAXisValueFormat != null && yAXisValueFormat.rightValueFormat(value) != null) {
+                    valueStr = yAXisValueFormat.rightValueFormat(value);
+                } else {
+                    if (yAxisRightDecimalPlaceCount > 0) {
+                        String format = "%."+yAxisRightDecimalPlaceCount+"f";
+                        valueStr = String.format(format, value);
+                    } else {
+                        valueStr = String.format(Locale.CHINA, "%d", (int)value);
+                    }
+                }
+                Paint.FontMetrics fontMetrics = paint_y_right_axis_text.getFontMetrics();
+                float offset_y = fontMetrics.ascent / 2.8f;
+                if (i == yAxisGridCount - 1) {
+                    offset_y = fontMetrics.ascent+5;
+                }
+                canvas.drawText(valueStr, margin_left+xAxisLength+yAxisRightWidth+8, start_y-offset_y, paint_y_right_axis_text);
             }
             // 次划线(网格之间再次分割)
             for (int j = 0; j < yAxisGridCount_2; j++) {
@@ -461,13 +528,32 @@ public class RTLineChartView extends View {
         // y轴文字(最小值)
         if (showYAxisText) {
             String valueStr = "";
-            if (yAxisDecimalPlaceCount > 0) {
-                String format = "%."+yAxisDecimalPlaceCount+"f";
-                valueStr = String.format(format, yAxisMinValue);
+            if (yAXisValueFormat != null && yAXisValueFormat.leftValueFormat(yAxisMinValue) != null) {
+                valueStr = yAXisValueFormat.leftValueFormat(yAxisMinValue);
             } else {
-                valueStr = String.format(Locale.CHINA, "%d", (int)yAxisMinValue);
+                if (yAxisDecimalPlaceCount > 0) {
+                    String format = "%."+yAxisDecimalPlaceCount+"f";
+                    valueStr = String.format(format, yAxisMinValue);
+                } else {
+                    valueStr = String.format(Locale.CHINA, "%d", (int)yAxisMinValue);
+                }
             }
             canvas.drawText(valueStr, margin_left-8, getHeight()-margin_bottom, paint_y_axis_text);
+        }
+        // 右侧y轴文字(最小值)
+        if (showRightYAxis) {
+            String valueStr = "";
+            if (yAXisValueFormat != null && yAXisValueFormat.rightValueFormat(yAxisMinValue) != null) {
+                valueStr = yAXisValueFormat.rightValueFormat(yAxisMinValue);
+            } else{
+                if (yAxisRightDecimalPlaceCount > 0) {
+                    String format = "%."+yAxisRightDecimalPlaceCount+"f";
+                    valueStr = String.format(format, yAxisMinValue*rightYAxisValueConvertScale);
+                } else {
+                    valueStr = String.format(Locale.CHINA, "%d", (int)(yAxisMinValue*rightYAxisValueConvertScale));
+                }
+            }
+            canvas.drawText(valueStr, margin_left+xAxisLength+yAxisRightWidth+8, getHeight()-margin_bottom, paint_y_right_axis_text);
         }
         // 折线
         boolean isOutTopRange = false;
@@ -553,6 +639,11 @@ public class RTLineChartView extends View {
     public interface RTLineChartYAxisDynamicValue {
         float minValue(float minValueInLine);
         float maxValue(float maxValueInLine);
+    }
+
+    public interface RTLineChartYAXisValueFormat {
+        String leftValueFormat(float value);
+        String rightValueFormat(float value);
     }
 
 }

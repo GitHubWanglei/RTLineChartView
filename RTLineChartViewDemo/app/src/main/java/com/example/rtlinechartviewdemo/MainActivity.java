@@ -19,6 +19,18 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
 
         RTLineChartView rtLineChartView = findViewById(R.id.rt_line_chart_view);
+//        rtLineChartView.setBackgroundColor(Color.GRAY);
+
+        rtLineChartView.margin_left = 150;
+        rtLineChartView.margin_right = 100;
+
+        rtLineChartView.rightYAxisValueConvertScale = 1 / 5.f;
+        rtLineChartView.yAxisRightWidth = 3;
+        rtLineChartView.yAxisRightColor = Color.YELLOW;
+        rtLineChartView.yAxisRightTextColor = Color.YELLOW;
+        rtLineChartView.yAxisRightTextSize = 25;
+        rtLineChartView.yAxisRightDecimalPlaceCount = 0;
+        rtLineChartView.showRightYAxis = true;
 
 //        rtLineChartView.xAxisColor = Color.YELLOW;
 //        rtLineChartView.yAxisColor = Color.GREEN;
@@ -32,10 +44,11 @@ public class MainActivity extends BaseActivity {
         rtLineChartView.yAxisGridCount_2 = 3;
 //        rtLineChartView.yAxisGridColor_2 = Color.WHITE;
 
-        rtLineChartView.xAxisTextColor = Color.YELLOW;
+//        rtLineChartView.xAxisTextColor = Color.YELLOW;
 //        rtLineChartView.yAxisTextColor = Color.RED;
+//        rtLineChartView.yAxisTextSize = 25;
 
-        rtLineChartView.xAxisTimeLength = 60;
+        rtLineChartView.xAxisTimeLength = 30;
         rtLineChartView.xAxisTimeUnit = RTLineChartView.TIME_UNIT_SECOND;
         rtLineChartView.xAxisTimeFormat = RTLineChartView.TIME_FORMAT_HH_MM_SS;
 
@@ -75,18 +88,36 @@ public class MainActivity extends BaseActivity {
         rtLineChartView.setYAxisDynamicValue(new RTLineChartView.RTLineChartYAxisDynamicValue() {
             @Override
             public float minValue(float minValueInLine) {
-                if (minValueInLine < 0) {
-                    return minValueInLine - 20;
-                }
+//                if (minValueInLine < 0) {
+//                    return minValueInLine - 20;
+//                }
                 return 0;
             }
 
             @Override
             public float maxValue(float maxValueInLine) {
-                if (maxValueInLine > 500) {
-                    return maxValueInLine + 50;
-                }
+//                if (maxValueInLine > 500) {
+//                    return maxValueInLine + 50;
+//                }
                 return 500;
+            }
+        });
+
+        rtLineChartView.setYAxisValueFormat(new RTLineChartView.RTLineChartYAXisValueFormat() {
+            @Override
+            public String leftValueFormat(float value) {
+                if (value == 500.f) {
+                    return value+" (最大)";
+                } else if (value == 0.f) {
+                    return value+" (最小)";
+                } else {
+                    return value+"";
+                }
+            }
+
+            @Override
+            public String rightValueFormat(float value) {
+                return (int)value+"%";
             }
         });
 
