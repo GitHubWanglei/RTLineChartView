@@ -46,6 +46,26 @@ A real-time curve component that only needs to bind variables for real-time disp
       }
    });
    ```
+5.可自定义左右y轴文字显示格式：
+   ```java
+   rtLineChartView.setYAxisValueFormat(new RTLineChartView.RTLineChartYAXisValueFormat() {
+      @Override
+      public String leftValueFormat(float value) {
+         if (value == 500.f) {
+            return value+" (最大)";
+         } else if (value == 0.f) {
+            return value+" (最小)";
+         } else {
+            return value+"";
+         }
+      }
+
+      @Override
+      public String rightValueFormat(float value) {
+         return (int)value+"%";
+      }
+   });
+   ```
 ### 使用注意点：
 1.每个实时变量的`identifier`需唯一，否则重复的`identifier`变量将无法绑定.   
 2.关于采样率：    
