@@ -6,6 +6,8 @@
 A real-time curve component that only needs to bind variables for real-time display.  
 
 ![ezgif-7-5b58b1fcd2](https://github.com/GitHubWanglei/RTLineChartView/assets/16434720/655b812c-966a-4cd9-9239-6c306a90cde7)
+![ezgif-6-bd7db6e750](https://github.com/GitHubWanglei/RTLineChartView/assets/16434720/0814c954-8183-4d23-90a3-d57f8891bfc6)
+
 
 ### 使用：   
 1.创建实时变量：
